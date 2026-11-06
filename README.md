@@ -1,3 +1,9 @@
+# Bot en cours de développement !
+
+Version instable, problèmes potentiels et imprévisibilité sur certaines fonctionnalités.
+- Veuillez attendre la sortie d'une **version stable** avant d'utiliser la source. Aucune date de sortie n'est estimée.
+> Vous pouvez néanmoins utiliser cette source en y intégrant vos modifications.
+
 # Lancer le projet (~5 minutes) :
 
 1) Installez Visual Studio Code
