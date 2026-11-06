@@ -7,3 +7,7 @@
 5) Ouvrez un nouveau terminal
 6) Exécutez la commande ``npm install discord.js`` dans ce dernier
 7) Exécutez la commande ``node index.js``
+
+# Requis via Discord Developer Portal
+
+![required](assets/image/readme1.png)
