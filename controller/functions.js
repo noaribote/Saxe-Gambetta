@@ -15,4 +15,20 @@ function AllFunctionsController({client, activities}) {
     return { changeActivity };
 }
 
-module.exports = { AllFunctionsController }
+function Qadmin({ message, Module_Embed }) {
+    if (!message.member || !(BigInt(message.member.permissions) & BigInt(0x00000008))) {
+        setTimeout(() => {
+            message.reply({ embeds: [
+                Module_Embed.newE({
+                    success: false,
+                    title: "Erreur",
+                    desc: "Commande réservée aux administrateurs."
+                })
+            ] });
+        }, 1000);
+        return true;
+    };
+    return false;
+}
+
+module.exports = { AllFunctionsController, Qadmin }
