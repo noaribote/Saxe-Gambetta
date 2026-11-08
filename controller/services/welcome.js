@@ -12,7 +12,7 @@ module.exports = (client, Module_Embed, Enabler, userMessages) => {
                 embeds: [
                     Module_Embed.newE({
                         title: "Bienvenue !",
-                        desc: `> ${member.toString()},\n> Prochain arrêt : **${member.guild.name}**\n> Correspondence **Saxe Gambetta** et **RIBOTE--MORAL Noa**.`,
+                        desc: `> ${member.toString()},\n> Prochain arrêt : **${member.guild.name}**\n> Correspondence **Saxe Gambetta** et **RIBOTE Noa**.`,
                         icon: member.user.displayAvatarURL()
                     })
                 ]

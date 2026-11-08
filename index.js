@@ -30,7 +30,7 @@ commands(client, prefix, Module_Embed, Enabler, userMessages);
 welcome(client, Module_Embed, Enabler, userMessages);
 
 client.once(Events.ClientReady, (readyClient) => {
-    console.log('\x1b[33m%s\x1b[0m', `${readyClient.user.tag} en ligne.`);
+    console.log('\x1b[33m%s\x1b[0m', `${readyClient.user.username} est en ligne.`);
     Module_1.changeActivity();
 });
 
