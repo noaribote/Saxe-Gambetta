@@ -17,3 +17,4 @@ Version instable, problèmes potentiels et imprévisibilités sur certaines fonc
 # Requis via Discord Developer Portal
 
 ![required](assets/image/readme1.png)
+![required](assets/image/readme2.png)
