@@ -8,34 +8,34 @@ Version instable, problèmes potentiels et imprévisibilités sur certaines fonc
 
 ### Pour tous les utilisateurs :
 
-- ``?help``, ``?info`` & ``@Saxe Gambetta Bot``
+``?help``, ``?info`` & ``@Saxe Gambetta Bot``
 > Permet de visualiser toutes les commandes et informations concernant le bot Saxe Gambetta.
-- ``?info (@ utilisateur)``
+``?info (@ utilisateur)``
 > Permet de visualiser toutes les informations concernant un utilisateur.
 
 ### Pour les administrateurs :
 
-- ``/create``
+``/create``
 > Permet de créer un message embarqué personnalisé.
-- ``?clear (0-100)``
+``?clear (0-100)``
 > Permet la suppression d'un nombre défini de messages.
-- ``?ban (@ utilisateur)``
+``?ban (@ utilisateur)``
 > Permet le banissement définitif d'un utilisateur du serveur.
-- ``?unban (ID utilisateur)``
+``?unban (ID utilisateur)``
 > Permet le débanissement d'un utilisateur du serveur.
-- ``?set-boost (on/off) (ID salon)``
+``?set-boost (on/off) (ID salon)``
 > Permet de remercier les utilisateurs qui boostent le serveur.
-- ``?set-welcome (on/off) (ID salon)``
+``?set-welcome (on/off) (ID salon)``
 > Permet de définir les messages de bienvenue pour les nouveaux membres.
-- ``?set-autorole (ID role)``
+``?set-autorole (ID role)``
 > Permet de définir un rôle par défaut pour les nouveaux membres.
-- ``?set-antilink (on/off)``
+``?set-antilink (on/off)``
 > Permet de filtrer les liens parmis ceux autorisés sur le serveur.
-- ``?antilink-exception (https://exemple.com/)``
+``?antilink-exception (https://exemple.com/)``
 > Permet de créer une exception pour autoriser certains liens sur le serveur.
-- ``?set-antispam``
+``?set-antispam``
 > Permet d'établir un anti-spam.
-- ``?set-antispam (nombre max. messages) (intervalle max. secondes)``
+``?set-antispam (nombre max. messages) (intervalle max. secondes)``
 > Permet d'établir un anti-spam personnalisé.
 
 ### Autres :
