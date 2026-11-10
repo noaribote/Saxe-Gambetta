@@ -2,8 +2,7 @@ module.exports = (client, Module_Embed, Enabler, userMessages) => {
     client.on("guildMemberAdd", async (member) => {
 
         if (Enabler.find(item => item.name === "welcome")?.stat) {
-            const welcomeChannelId = userMessages.get("welcome-channel-id");
-            const welcomeChannel = member.guild.channels.cache.get(welcomeChannelId);
+            const welcomeChannel = member.guild.channels.cache.get(userMessages.get("welcome-channel-id"));
 
             if (welcomeChannel) {
                 welcomeChannel.send({

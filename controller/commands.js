@@ -21,7 +21,7 @@ module.exports = (client, prefix, Module_Embed, Enabler, userMessages) => {
                             { name: '``?clear (0-100)``', value: '> Permet la suppression d\'un nombre défini de messages.', inline: false },
                             // { name: '``?ban (@ utilisateur)``', value: '> Permet le banissement définitif d\'un utilisateur du serveur.', inline: false },
                             // { name: '``?unban (ID utilisateur)``', value: '> Permet le débanissement d\'un utilisateur du serveur.', inline: false },
-                            // { name: '``?set-boost (on/off) (ID salon)``', value: '> Permet de remercier les utilisateurs qui boostent le serveur.', inline: false },
+                            { name: '``?set-boost (on/off) (ID salon)``', value: '> Permet de remercier les utilisateurs qui boostent le serveur.', inline: false },
                             { name: '``?set-welcome (on/off) (ID salon)``', value: '> Permet de définir les messages de bienvenue pour les nouveaux membres.', inline: false },
                             { name: '``?set-autorole (on/off) (ID role)``', value: '> Permet de définir un rôle par défaut pour les nouveaux membres.', inline: false },
                             // { name: '``?set-antilink (on/off)``', value: '> Permet de filtrer les liens parmis ceux autorisés sur le serveur.', inline: false },
@@ -138,6 +138,71 @@ module.exports = (client, prefix, Module_Embed, Enabler, userMessages) => {
 
         const args = message.content.slice(prefix.length).trim().split(/ +/);
         const command = args.shift().toLowerCase();
+
+        if (command === "set-boost") {
+
+            if (Qadmin({ message, Module_Embed })) return;
+
+            if (args[0] === "on") {
+                if (args[1]) {
+                    const channelId = args[1];
+                    if (message.guild.channels.cache.has(channelId)) {
+                        userMessages.set("boost-channel-id", channelId);
+                        Enabler.find(item => item.name === "boost").stat = true;
+                        message.reply({
+                            embeds: [
+                                Module_Embed.newE({
+                                    success: true,
+                                    title: "Succès de l'opération",
+                                    desc: `Les messages de remerciements sont désormais activés dans le salon <#${channelId}>.`
+                                })
+                            ]
+                        });
+                    } else {
+                        message.reply({
+                            embeds: [
+                                Module_Embed.newE({
+                                    success: false,
+                                    title: "Erreur",
+                                    desc: "L'ID fourni ne correspond à aucun salon visible."
+                                })
+                            ]
+                        });
+                    }
+                } else {
+                    message.reply({
+                        embeds: [
+                            Module_Embed.newE({
+                                success: false,
+                                title: "Erreur",
+                                desc: "Afin d'activer les messages de remerciements correctement, un ID de salon est requis pour identifier le salon à utiliser."
+                            })
+                        ]
+                    });
+                }
+            } else if (args[0] === "off") {
+                Enabler.find(item => item.name === "boost").stat = false;
+                message.reply({
+                    embeds: [
+                        Module_Embed.newE({
+                            success: true,
+                            title: "Succès de l'opération",
+                            desc: "Les messages de remerciements sont désormais désactivés."
+                        })
+                    ]
+                });
+            } else {
+                message.reply({
+                    embeds: [
+                        Module_Embed.newE({
+                            success: false,
+                            title: "Erreur",
+                            desc: "Veuillez utiliser les arguments `on` ou `off` afin d'activer ou de désactiver les messages de remerciements."
+                        })
+                    ]
+                });
+            }
+        }
 
         if (command === "set-welcome") {
 
