@@ -1,8 +1,8 @@
 # Bot en cours de développement !
 
-Version instable, problèmes potentiels et imprévisibilités sur certaines fonctionnalités.
-- Veuillez attendre la sortie d'une **version stable** avant d'utiliser la source. Aucune date de sortie n'est estimée.
-> Vous pouvez néanmoins utiliser cette source en y intégrant vos modifications.
+Version stable mais incomplète avec des problèmes potentiels.
+- Veuillez attendre la sortie d'une **version complète** avant d'utiliser la source. Aucune date de sortie n'est estimée.
+> Vous pouvez néanmoins utiliser cette source en y intégrant vos propres modifications.
 
 # Fonctionnalités disponibles
 
