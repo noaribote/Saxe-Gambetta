@@ -34,7 +34,7 @@ Version instable, problèmes potentiels et imprévisibilités sur certaines fonc
 ``?set-welcome (on/off) (ID salon)``
 > Permet de définir les messages de bienvenue pour les nouveaux membres.
 
-``?set-autorole (ID role)``
+``?set-autorole (on/off) (ID role)``
 > Permet de définir un rôle par défaut pour les nouveaux membres.
 
 ``?set-antilink (on/off)``

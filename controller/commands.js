@@ -23,7 +23,7 @@ module.exports = (client, prefix, Module_Embed, Enabler, userMessages) => {
                             // { name: '``?unban (ID utilisateur)``', value: '> Permet le débanissement d\'un utilisateur du serveur.', inline: false },
                             // { name: '``?set-boost (on/off) (ID salon)``', value: '> Permet de remercier les utilisateurs qui boostent le serveur.', inline: false },
                             { name: '``?set-welcome (on/off) (ID salon)``', value: '> Permet de définir les messages de bienvenue pour les nouveaux membres.', inline: false },
-                            // { name: '``?set-autorole (ID role)``', value: '> Permet de définir un rôle par défaut pour les nouveaux membres.', inline: false },
+                            { name: '``?set-autorole (on/off) (ID role)``', value: '> Permet de définir un rôle par défaut pour les nouveaux membres.', inline: false },
                             // { name: '``?set-antilink (on/off)``', value: '> Permet de filtrer les liens parmis ceux autorisés sur le serveur.', inline: false },
                             // { name: '``?antilink-exception (https://exemple.com/)``', value: '> Permet de créer une exception pour autoriser certains liens sur le serveur.', inline: false },
                             // { name: '``?set-antispam``', value: '> Permet d\'établir un anti-spam.', inline: false },
@@ -138,7 +138,6 @@ module.exports = (client, prefix, Module_Embed, Enabler, userMessages) => {
 
         const args = message.content.slice(prefix.length).trim().split(/ +/);
         const command = args.shift().toLowerCase();
-        const welcome = Enabler.find(item => item.name === "welcome");
 
         if (command === "set-welcome") {
 
@@ -149,7 +148,7 @@ module.exports = (client, prefix, Module_Embed, Enabler, userMessages) => {
                     const channelId = args[1];
                     if (message.guild.channels.cache.has(channelId)) {
                         userMessages.set("welcome-channel-id", channelId);
-                        welcome.stat = true;
+                        Enabler.find(item => item.name === "welcome").stat = true;
                         message.reply({
                             embeds: [
                                 Module_Embed.newE({
@@ -182,7 +181,7 @@ module.exports = (client, prefix, Module_Embed, Enabler, userMessages) => {
                     });
                 }
             } else if (args[0] === "off") {
-                welcome.stat = false;
+                Enabler.find(item => item.name === "welcome").stat = false;
                 message.reply({
                     embeds: [
                         Module_Embed.newE({
@@ -199,6 +198,71 @@ module.exports = (client, prefix, Module_Embed, Enabler, userMessages) => {
                             success: false,
                             title: "Erreur",
                             desc: "Veuillez utiliser les arguments `on` ou `off` afin d'activer ou de désactiver les messages de bienvenue."
+                        })
+                    ]
+                });
+            }
+        }
+
+        if (command === 'set-autorole') {
+
+            if (Qadmin({ message, Module_Embed })) return;
+
+            if (args[0] === "on") {
+                if (args[1]) {
+                    const roleID = args[1];
+                    if (message.guild.roles.cache.has(roleID)) {
+                        userMessages.set("autorole-role-id", roleID);
+                        Enabler.find(item => item.name === "autorole").stat = true;
+                        message.reply({
+                            embeds: [
+                                Module_Embed.newE({
+                                    success: true,
+                                    title: "Succès de l'opération",
+                                    desc: `Le rôle <@${roleID}> sera désormais attribué automatiquement aux nouveaux membres.`
+                                })
+                            ]
+                        });
+                    } else {
+                        message.reply({
+                            embeds: [
+                                Module_Embed.newE({
+                                    success: false,
+                                    title: "Erreur",
+                                    desc: "L'ID fourni ne correspond à aucun rôle visible."
+                                })
+                            ]
+                        });
+                    }
+                } else {
+                    message.reply({
+                        embeds: [
+                            Module_Embed.newE({
+                                success: false,
+                                title: "Erreur",
+                                desc: "Afin d'activer les rôles automatiques correctement, un ID de rôle est requis pour identifier le rôle à attribuer aux nouveaux membres."
+                            })
+                        ]
+                    });
+                }
+            } else if (args[0] === "off") {
+                Enabler.find(item => item.name === "autorole").stat = false;
+                message.reply({
+                    embeds: [
+                        Module_Embed.newE({
+                            success: true,
+                            title: "Succès de l'opération",
+                            desc: "Les rôles automatiques sont désormais désactivés."
+                        })
+                    ]
+                });
+            } else {
+                message.reply({
+                    embeds: [
+                        Module_Embed.newE({
+                            success: false,
+                            title: "Erreur",
+                            desc: "Veuillez utiliser les arguments `on` ou `off` afin d'activer ou de désactiver les rôles automatiques."
                         })
                     ]
                 });

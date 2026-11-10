@@ -3,7 +3,7 @@ const { token, prefix } = require('./config/essential.json');
 const { AllFunctionsController } = require("./controller/functions.js");
 const { CreateEmbed } = require("./controller/EmbedBuilder.js");
 const commands = require('./controller/commands.js');
-const welcome = require('./controller/services/welcome.js');
+const welcome = require('./controller/services/guildMemberAdd.js');
 
 const userMessages = new Map();
 const client = new Client({
@@ -21,7 +21,8 @@ const activities = [
 ];
 
 let Enabler = [
-    { name: "welcome", stat: false }
+    { name: "welcome", stat: false },
+    { name: "autorole", stat: false }
 ];
 
 const Module_1 = AllFunctionsController({client, activities});
