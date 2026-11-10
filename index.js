@@ -2,8 +2,6 @@ const { Client, GatewayIntentBits, EmbedBuilder, ActivityType, MessageManager, C
 const { token, prefix } = require('./config/essential.json');
 const { AllFunctionsController } = require("./controller/functions.js");
 const { CreateEmbed } = require("./controller/EmbedBuilder.js");
-const commands = require('./controller/commands.js');
-const welcome = require('./controller/services/guildMemberAdd.js');
 
 const userMessages = new Map();
 const client = new Client({
@@ -27,8 +25,8 @@ let Enabler = [
 
 const Module_1 = AllFunctionsController({client, activities});
 const Module_Embed = CreateEmbed({EmbedBuilder});
-commands(client, prefix, Module_Embed, Enabler, userMessages);
-welcome(client, Module_Embed, Enabler, userMessages);
+require('./controller/commands.js')(client, prefix, Module_Embed, Enabler, userMessages);
+require('./controller/services/guildMemberAdd.js')(client, Module_Embed, Enabler, userMessages);
 
 client.once(Events.ClientReady, (readyClient) => {
     console.log('\x1b[33m%s\x1b[0m', `${readyClient.user.username} est en ligne.`);
