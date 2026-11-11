@@ -1,8 +1,10 @@
-module.exports = (client, prefix, Module_Embed, Enabler, userMessages) => {
-    const { Qadmin } = require("./functions.js");
-
+module.exports = (client, prefix, Module_Embed, Enabler, userMessages, antilink) => {
+    const { Qadmin, Fantilink } = require("./functions.js");
     client.on('messageCreate', (message) => {
         if (message.author.bot) return;
+
+        Fantilink(Module_Embed, Enabler, antilink, message);
+
         if (!message.content.startsWith(prefix)) return;
 
         if (message.content === prefix + `help` || message.content === prefix + `info` || message.content === `<@${client.user.id}>`) {
@@ -24,7 +26,7 @@ module.exports = (client, prefix, Module_Embed, Enabler, userMessages) => {
                             { name: '``?set-boost (on/off) (ID salon)``', value: '> Permet de remercier les utilisateurs qui boostent le serveur.', inline: false },
                             { name: '``?set-welcome (on/off) (ID salon)``', value: '> Permet de définir les messages de bienvenue pour les nouveaux membres.', inline: false },
                             { name: '``?set-autorole (on/off) (ID role)``', value: '> Permet de définir un rôle par défaut pour les nouveaux membres.', inline: false },
-                            // { name: '``?set-antilink (on/off)``', value: '> Permet de filtrer les liens parmis ceux autorisés sur le serveur.', inline: false },
+                            { name: '``?set-antilink (on/off)``', value: '> Permet de filtrer les liens parmis ceux autorisés sur le serveur.', inline: false },
                             // { name: '``?antilink-exception (https://exemple.com/)``', value: '> Permet de créer une exception pour autoriser certains liens sur le serveur.', inline: false },
                             // { name: '``?set-antispam``', value: '> Permet d\'établir un anti-spam.', inline: false },
                             // { name: '``?set-antispam (nombre max. messages) (intervalle max. secondes)``', value: '> Permet d\'établir un anti-spam personnalisé.', inline: false },

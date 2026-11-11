@@ -22,14 +22,21 @@ const activities = [
 ];
 
 let Enabler = [
+    { name: "antilink", stat: false },
     { name: "boost", stat: false },
     { name: "welcome", stat: false },
     { name: "autorole", stat: false }
 ];
 
+let antilink = {
+    blacklisted: ['.gg/', 'youtu.be/'],
+    allowedHosts: ['tenor.com', 'media.tenor.com', 'www.tenor.com']
+};
+
 const Module_1 = AllFunctionsController({client, activities});
 const Module_Embed = CreateEmbed({EmbedBuilder});
-require('./controller/commands.js')(client, prefix, Module_Embed, Enabler, userMessages);
+require('./controller/commands.js')(client, prefix, Module_Embed, Enabler, userMessages, antilink);
+require('./controller/commandsUpdate.js')(client, Module_Embed, Enabler, antilink);
 require('./controller/services/guildMemberAdd.js')(client, Module_Embed, Enabler, userMessages);
 require('./controller/services/guildMemberUpdate.js')(client, Events, Module_Embed, Enabler, userMessages);
 
