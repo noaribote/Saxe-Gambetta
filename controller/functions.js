@@ -66,4 +66,88 @@ function Fantilink(Module_Embed, Enabler, antilink, etatMessage) {
     }
 }
 
-module.exports = { AllFunctionsController, Qadmin, containsForbiddenLink, Fantilink }
+function erreurJSON(message, Module_Embed) {
+    return message.reply({ embeds: [
+        Module_Embed.newE({
+            success: false,
+            title: 'Erreur',
+            desc: "Impossible de lire la sauvegarde. Aucune confirmation n'a été envoyée."
+        })
+    ] });
+}
+
+function getConfigPaths(FunctionsPack) {
+    const [, path] = FunctionsPack;
+    const modelPath = path.join(__dirname, '..', 'model');
+    return {
+        enabler: path.join(modelPath, 'servers_enabler.json'),
+        antilink: path.join(modelPath, 'servers_antilink.json')
+    };
+}
+
+function readJson(fs, filePath) { return JSON.parse(fs.readFileSync(filePath, 'utf8')); }
+function writeJson(fs, filePath, data) { fs.writeFileSync(filePath, `${JSON.stringify(data, null, 4)}\n`, 'utf8'); }
+
+function saveServerConfigs(FunctionsPack, guild, serverConfig, expected = {}) {
+    if (!guild) return true;
+
+    const [fs] = FunctionsPack;
+    const paths = getConfigPaths(FunctionsPack);
+    const enablerData = readJson(fs, paths.enabler);
+    const antilinkData = readJson(fs, paths.antilink);
+    const serverIndex = enablerData.servers.findIndex(item => String(item['server-id']) === guild.id);
+
+    if (serverIndex === -1) {
+        enablerData.servers.push(serverConfig);
+    } else {
+        enablerData.servers[serverIndex] = serverConfig;
+    };
+
+    writeJson(fs, paths.enabler, enablerData);
+    writeJson(fs, paths.antilink, antilinkData);
+
+    const savedEnablerData = readJson(fs, paths.enabler);
+    const savedAntilinkData = readJson(fs, paths.antilink);
+    const enablerServer = savedEnablerData.servers.find(item => String(item['server-id']) === guild.id);
+    const antilinkServer = savedAntilinkData.servers.find(item => String(item['server-id']) === guild.id);
+
+    const checks = Array.isArray(expected) ? expected : [expected];
+    return checks.every(check => {
+        if (check.setting) return enablerServer?.settings?.[check.setting.key] === check.setting.value;
+        if (check.enabler) return enablerServer?.enabler?.find(item => item.name === check.enabler.name)?.stat === check.enabler.stat;
+        if (check.antilink) return antilinkServer?.[check.antilink.key]?.includes(check.antilink.value) === check.antilink.includes;
+        return false;
+    });
+}
+
+function getServerEnabler(FunctionsPack, guild) {
+    const [fs] = FunctionsPack;
+    const filePath = getConfigPaths(FunctionsPack).enabler;
+    const data = readJson(fs, filePath);
+    let server = data.servers.find(item => String(item['server-id']) === guild.id);
+    if (!server) {
+        server = { 'server-id': guild.id, enabler: structuredClone(FunctionsPack[2]), settings: {} };
+        data.servers.push(server);
+        writeJson(fs, filePath, data);
+    } else {
+        server.settings ??= {};
+        server.enabler ??= structuredClone(FunctionsPack[2]);
+        writeJson(fs, filePath, data);
+    }
+    return server;
+}
+
+function getServerAntilink(FunctionsPack, guild) {
+    const [fs] = FunctionsPack;
+    const filePath = getConfigPaths(FunctionsPack).antilink;
+    const data = readJson(fs, filePath);
+    let server = data.servers.find(item => String(item['server-id']) === guild.id);
+    if (!server) {
+        server = { 'server-id': guild.id, ...structuredClone(FunctionsPack[3]) };
+        data.servers.push(server);
+        writeJson(fs, filePath, data);
+    }
+    return server;
+}
+
+module.exports = { AllFunctionsController, Qadmin, containsForbiddenLink, Fantilink, getServerEnabler, getServerAntilink, saveServerConfigs, erreurJSON }

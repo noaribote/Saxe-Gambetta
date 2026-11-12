@@ -1,7 +1,11 @@
-module.exports = (client, prefix, Module_Embed, Enabler, userMessages, antilink) => {
-    const { Qadmin, Fantilink } = require("./functions.js");
+module.exports = (client, prefix, Module_Embed, getServerEnabler, getServerAntilink, saveServerConfigs, FunctionsPack) => {
+    const { Qadmin, Fantilink, erreurJSON } = require("./functions.js");
     client.on('messageCreate', (message) => {
-        if (message.author.bot) return;
+        if (message.author.bot || !message.guild) return;
+
+        const serverConfig = getServerEnabler(FunctionsPack, message.guild);
+        const Enabler = serverConfig.enabler;
+        const antilink = getServerAntilink(FunctionsPack, message.guild);
 
         Fantilink(Module_Embed, Enabler, antilink, message);
 
@@ -26,8 +30,8 @@ module.exports = (client, prefix, Module_Embed, Enabler, userMessages, antilink)
                             { name: '``?set-boost (on/off) (ID salon)``', value: '> Permet de remercier les utilisateurs qui boostent le serveur.', inline: false },
                             { name: '``?set-welcome (on/off) (ID salon)``', value: '> Permet de définir les messages de bienvenue pour les nouveaux membres.', inline: false },
                             { name: '``?set-autorole (on/off) (ID role)``', value: '> Permet de définir un rôle par défaut pour les nouveaux membres.', inline: false },
-                            { name: '``?set-antilink (on/off)``', value: '> Permet de filtrer les liens parmis ceux autorisés sur le serveur.', inline: false },
-                            // { name: '``?antilink-exception (https://exemple.com/)``', value: '> Permet de créer une exception pour autoriser certains liens sur le serveur.', inline: false },
+                            // { name: '``?set-antilink (on/off)``', value: '> Permet de filtrer les liens parmis ceux autorisés sur le serveur.', inline: false },
+                            // { name: '``/antilink``', value: '> Permet de paramétrer l\'antilink du serveur.', inline: false },
                             // { name: '``?set-antispam``', value: '> Permet d\'établir un anti-spam.', inline: false },
                             // { name: '``?set-antispam (nombre max. messages) (intervalle max. secondes)``', value: '> Permet d\'établir un anti-spam personnalisé.', inline: false },
                             { name: '\u200B', value: '\u200B' },
@@ -86,8 +90,11 @@ module.exports = (client, prefix, Module_Embed, Enabler, userMessages, antilink)
 
     });
     client.on("messageCreate", async (message) => {
-        if (message.author.bot) return;
+        if (message.author.bot || !message.guild) return;
         if (!message.content.startsWith(prefix)) return;
+
+        const serverConfig = getServerEnabler(FunctionsPack, message.guild);
+        const Enabler = serverConfig.enabler;
 
         if (message.content.startsWith(prefix + 'info')) {
             const args = message.content.slice(prefix.length + "info".length).trim().split(/ +/);
@@ -149,8 +156,12 @@ module.exports = (client, prefix, Module_Embed, Enabler, userMessages, antilink)
                 if (args[1]) {
                     const channelId = args[1];
                     if (message.guild.channels.cache.has(channelId)) {
-                        userMessages.set("boost-channel-id", channelId);
+                        serverConfig.settings.boostChannelId = channelId;
                         Enabler.find(item => item.name === "boost").stat = true;
+                        if (!saveServerConfigs(FunctionsPack, message.guild, serverConfig, [
+                            { setting: { key: 'boostChannelId', value: channelId } },
+                            { enabler: { name: 'boost', stat: true } }
+                        ])) return erreurJSON(message, Module_Embed);
                         message.reply({
                             embeds: [
                                 Module_Embed.newE({
@@ -184,6 +195,7 @@ module.exports = (client, prefix, Module_Embed, Enabler, userMessages, antilink)
                 }
             } else if (args[0] === "off") {
                 Enabler.find(item => item.name === "boost").stat = false;
+                if (!saveServerConfigs(FunctionsPack, message.guild, serverConfig, { enabler: { name: 'boost', stat: false } })) return erreurJSON(message, Module_Embed);
                 message.reply({
                     embeds: [
                         Module_Embed.newE({
@@ -214,8 +226,12 @@ module.exports = (client, prefix, Module_Embed, Enabler, userMessages, antilink)
                 if (args[1]) {
                     const channelId = args[1];
                     if (message.guild.channels.cache.has(channelId)) {
-                        userMessages.set("welcome-channel-id", channelId);
+                        serverConfig.settings.welcomeChannelId = channelId;
                         Enabler.find(item => item.name === "welcome").stat = true;
+                        if (!saveServerConfigs(FunctionsPack, message.guild, serverConfig, [
+                            { setting: { key: 'welcomeChannelId', value: channelId } },
+                            { enabler: { name: 'welcome', stat: true } }
+                        ])) return erreurJSON(message, Module_Embed);
                         message.reply({
                             embeds: [
                                 Module_Embed.newE({
@@ -249,6 +265,7 @@ module.exports = (client, prefix, Module_Embed, Enabler, userMessages, antilink)
                 }
             } else if (args[0] === "off") {
                 Enabler.find(item => item.name === "welcome").stat = false;
+                if (!saveServerConfigs(FunctionsPack, message.guild, serverConfig, { enabler: { name: 'welcome', stat: false } })) return erreurJSON(message, Module_Embed);
                 message.reply({
                     embeds: [
                         Module_Embed.newE({
@@ -279,8 +296,12 @@ module.exports = (client, prefix, Module_Embed, Enabler, userMessages, antilink)
                 if (args[1]) {
                     const roleID = args[1];
                     if (message.guild.roles.cache.has(roleID)) {
-                        userMessages.set("autorole-role-id", roleID);
+                        serverConfig.settings.autoroleRoleId = roleID;
                         Enabler.find(item => item.name === "autorole").stat = true;
+                        if (!saveServerConfigs(FunctionsPack, message.guild, serverConfig, [
+                            { setting: { key: 'autoroleRoleId', value: roleID } },
+                            { enabler: { name: 'autorole', stat: true } }
+                        ])) return erreurJSON(message, Module_Embed);
                         message.reply({
                             embeds: [
                                 Module_Embed.newE({
@@ -314,6 +335,7 @@ module.exports = (client, prefix, Module_Embed, Enabler, userMessages, antilink)
                 }
             } else if (args[0] === "off") {
                 Enabler.find(item => item.name === "autorole").stat = false;
+                if (!saveServerConfigs(FunctionsPack, message.guild, serverConfig, { enabler: { name: 'autorole', stat: false } })) return erreurJSON(message, Module_Embed);
                 message.reply({
                     embeds: [
                         Module_Embed.newE({

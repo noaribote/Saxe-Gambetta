@@ -1,8 +1,11 @@
-module.exports = (client, Module_Embed, Enabler, userMessages) => {
+module.exports = (client, Module_Embed, getServerEnabler, FunctionsPack) => {
     client.on("guildMemberAdd", async (member) => {
+        const serverConfig = getServerEnabler(FunctionsPack, member.guild);
+        const Enabler = serverConfig.enabler;
+        const settings = serverConfig.settings;
 
         if (Enabler.find(item => item.name === "welcome")?.stat) {
-            const welcomeChannel = member.guild.channels.cache.get(userMessages.get("welcome-channel-id"));
+            const welcomeChannel = member.guild.channels.cache.get(settings.welcomeChannelId);
 
             if (welcomeChannel) {
                 welcomeChannel.send({
@@ -20,7 +23,7 @@ module.exports = (client, Module_Embed, Enabler, userMessages) => {
         }
 
         if (Enabler.find(item => item.name === "autorole")?.stat) {
-            const role = member.guild.roles.cache.get(userMessages.get("autorole-role-id"));
+            const role = member.guild.roles.cache.get(settings.autoroleRoleId);
             if (role) {
                 member.roles.add(role)
                     .then(() =>

@@ -40,8 +40,8 @@ Version stable mais incomplète avec des problèmes potentiels.
 ``?set-antilink (on/off)``
 > Permet de filtrer les liens parmis ceux autorisés sur le serveur.
 
-``?antilink-exception (https://exemple.com/)``
-> Permet de créer une exception pour autoriser certains liens sur le serveur.
+``/antilink``
+> Permet de paramétrer l'antilink du serveur.
 
 ``?set-antispam``
 > Permet d'établir un anti-spam.
@@ -52,6 +52,8 @@ Version stable mais incomplète avec des problèmes potentiels.
 ### Autres :
 
 - Status dynamique
+- Sauvegarde automatique des modifications
+> En cas de panne du bot, les paramètres seront conservés dans des fichiers de données JSON. Il suffira de redémarrer le bot pour récupérer les données.
 
 # Lancer le projet (~5 minutes) :
 

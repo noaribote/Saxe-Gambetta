@@ -1,9 +1,11 @@
-module.exports = (client, Events, Module_Embed, Enabler, userMessages) => {
+module.exports = (client, Events, Module_Embed, getServerEnabler, FunctionsPack) => {
     client.on(Events.GuildMemberUpdate, (oldMember, newMember) => {
         if (oldMember.partial) return;
 
+        const serverConfig = getServerEnabler(FunctionsPack, newMember.guild);
+        const Enabler = serverConfig.enabler;
         if (Enabler.find(item => item.name === "boost")?.stat) {
-            const boostChannel = newMember.guild.channels.cache.get(userMessages.get("boost-channel-id"));
+            const boostChannel = newMember.guild.channels.cache.get(serverConfig.settings.boostChannelId);
 
             if (boostChannel) {
                 if (!oldMember.premiumSince && newMember.premiumSince) {
