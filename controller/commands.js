@@ -33,7 +33,7 @@ module.exports = (client, prefix, Module_Embed, getServerEnabler, getServerAntil
                             { name: '``?set-antilink (on/off)``', value: '> Permet de filtrer les liens parmis ceux autorisés sur le serveur.', inline: false },
                             // { name: '``/antilink``', value: '> Permet de paramétrer l\'antilink du serveur.', inline: false },
                             // { name: '``?set-antispam``', value: '> Permet d\'établir un anti-spam.', inline: false },
-                            // { name: '``?set-antispam (nombre max. messages) (intervalle max. secondes)``', value: '> Permet d\'établir un anti-spam personnalisé.', inline: false },
+                            // { name: '``/antispam``', value: '> Permet d\'établir un anti-spam personnalisé.', inline: false },
                             { name: '\u200B', value: '\u200B' },
                             { name: 'Code source du bot Saxe Gambetta :', value: 'https://github.com/noaribote/Saxe-Gambetta', inline: false }
                         ]

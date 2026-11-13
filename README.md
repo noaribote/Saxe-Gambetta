@@ -41,13 +41,13 @@ Version stable mais incomplète avec des problèmes potentiels.
 > Permet de filtrer les liens parmis ceux autorisés sur le serveur.
 
 ``/antilink``
-> Permet de paramétrer l'antilink du serveur.
+> Permet de paramétrer l'anti-link du serveur.
 
 ``?set-antispam``
 > Permet d'établir un anti-spam.
 
-``?set-antispam (nombre max. messages) (intervalle max. secondes)``
-> Permet d'établir un anti-spam personnalisé.
+``/antispam``
+> Permet de paramétrer l'anti-spam du serveur.
 
 ### Autres :
 
