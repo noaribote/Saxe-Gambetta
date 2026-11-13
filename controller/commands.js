@@ -1,5 +1,5 @@
 module.exports = (client, prefix, Module_Embed, getServerEnabler, getServerAntilink, saveServerConfigs, FunctionsPack) => {
-    const { Qadmin, Fantilink, erreurJSON } = require("./functions.js");
+    const { Qadmin, Fantilink, erreurJSON } = require("./functions.js");    
     client.on('messageCreate', (message) => {
         if (message.author.bot || !message.guild) return;
 
@@ -30,7 +30,7 @@ module.exports = (client, prefix, Module_Embed, getServerEnabler, getServerAntil
                             { name: '``?set-boost (on/off) (ID salon)``', value: '> Permet de remercier les utilisateurs qui boostent le serveur.', inline: false },
                             { name: '``?set-welcome (on/off) (ID salon)``', value: '> Permet de définir les messages de bienvenue pour les nouveaux membres.', inline: false },
                             { name: '``?set-autorole (on/off) (ID role)``', value: '> Permet de définir un rôle par défaut pour les nouveaux membres.', inline: false },
-                            // { name: '``?set-antilink (on/off)``', value: '> Permet de filtrer les liens parmis ceux autorisés sur le serveur.', inline: false },
+                            { name: '``?set-antilink (on/off)``', value: '> Permet de filtrer les liens parmis ceux autorisés sur le serveur.', inline: false },
                             // { name: '``/antilink``', value: '> Permet de paramétrer l\'antilink du serveur.', inline: false },
                             // { name: '``?set-antispam``', value: '> Permet d\'établir un anti-spam.', inline: false },
                             // { name: '``?set-antispam (nombre max. messages) (intervalle max. secondes)``', value: '> Permet d\'établir un anti-spam personnalisé.', inline: false },
@@ -41,6 +41,46 @@ module.exports = (client, prefix, Module_Embed, getServerEnabler, getServerAntil
                 ]
             });
         };
+
+        if (message.content.startsWith(prefix + 'set-antilink')) {
+            const args = message.content.slice(prefix.length + "set-antilink".length).trim().split(/ +/);
+            if (Qadmin({ message, Module_Embed })) return;
+            if (args[0] === "on") {
+                Enabler.find(item => item.name === "antilink").stat = true;
+                if (!saveServerConfigs(FunctionsPack, message.guild, serverConfig, { enabler: { name: 'antilink', stat: true } })) return erreurJSON(message, Module_Embed);
+                message.reply({
+                    embeds: [
+                        Module_Embed.newE({
+                            success: true,
+                            title: "Succès de l'opération",
+                            desc: 'L\'antilink est désormais activé. Utilisez `/antilink` pour régler ses paramètres.'
+                        })
+                    ]
+                });
+            } else if (args[0] === "off") {
+                Enabler.find(item => item.name === "antilink").stat = false;
+                if (!saveServerConfigs(FunctionsPack, message.guild, serverConfig, { enabler: { name: 'antilink', stat: false } })) return erreurJSON(message, Module_Embed);
+                message.reply({
+                    embeds: [
+                        Module_Embed.newE({
+                            success: true,
+                            title: "Succès de l'opération",
+                            desc: `L'antilink est désormais désactivé.`
+                        })
+                    ]
+                });
+            } else {
+                message.reply({
+                    embeds: [
+                        Module_Embed.newE({
+                            success: false,
+                            title: "Erreur",
+                            desc: "Veuillez utiliser les arguments `on` ou `off` afin d'activer ou de désactiver l'antilink."
+                        })
+                    ]
+                });
+            }
+        }
 
         if (message.content.startsWith(prefix + 'clear')) {
             const args = message.content.slice(prefix.length + "clear".length).trim().split(/ +/);
