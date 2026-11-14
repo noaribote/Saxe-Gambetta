@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, EmbedBuilder, ActivityType, MessageManager, Collection, Events, Partials } = require("discord.js");
+const { Client, GatewayIntentBits, EmbedBuilder, ActivityType, Events, Partials } = require("discord.js");
 const { AllFunctionsController, getServerEnabler, getServerAntilink, saveServerConfigs } = require("./controller/functions.js");
 const { token, prefix } = require('./config/essential.json');
 const { CreateEmbed } = require("./controller/services/EmbedBuilder.js");
@@ -22,9 +22,10 @@ const FunctionsPack = [fs, path, enablerDefaults, antilinkDefaults];
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent,
-        GatewayIntentBits.GuildMembers
+        GatewayIntentBits.GuildModeration,
+        GatewayIntentBits.MessageContent
     ],
     partials: [
         Partials.GuildMember

@@ -25,8 +25,8 @@ module.exports = (client, prefix, Module_Embed, getServerEnabler, getServerAntil
                             { name: '\u200B', value: '**Pour les administrateurs :**' },
                             // { name: '``/create``', value: '> Permet de créer un message embarqué personnalisé.', inline: false },
                             { name: '``?clear (0-100)``', value: '> Permet la suppression d\'un nombre défini de messages.', inline: false },
-                            // { name: '``?ban (@ utilisateur)``', value: '> Permet le banissement définitif d\'un utilisateur du serveur.', inline: false },
-                            // { name: '``?unban (ID utilisateur)``', value: '> Permet le débanissement d\'un utilisateur du serveur.', inline: false },
+                            { name: '``?ban (@ utilisateur)``', value: '> Permet le banissement définitif d\'un utilisateur du serveur.', inline: false },
+                            { name: '``?unban (ID utilisateur)``', value: '> Permet le débanissement d\'un utilisateur du serveur.', inline: false },
                             { name: '``?set-boost (on/off) (ID salon)``', value: '> Permet de remercier les utilisateurs qui boostent le serveur.', inline: false },
                             { name: '``?set-welcome (on/off) (ID salon)``', value: '> Permet de définir les messages de bienvenue pour les nouveaux membres.', inline: false },
                             { name: '``?set-autorole (on/off) (ID role)``', value: '> Permet de définir un rôle par défaut pour les nouveaux membres.', inline: false },
@@ -187,6 +187,139 @@ module.exports = (client, prefix, Module_Embed, getServerEnabler, getServerAntil
 
         const args = message.content.slice(prefix.length).trim().split(/ +/);
         const command = args.shift().toLowerCase();
+
+
+        if (command === 'ban') {
+            if (Qadmin({ message, Module_Embed })) return;
+
+            const member = message.mentions.members.first();
+            if (!member) {
+                return message.reply({
+                    embeds: [
+                        Module_Embed.newE({
+                            success: false,
+                            title: "Erreur",
+                            desc: "Veuillez mentionner un utilisateur à bannir du serveur."
+                        })
+                    ]
+                });
+            }
+            if (member.id === message.guild.ownerId) {
+                return message.reply({
+                    embeds: [
+                        Module_Embed.newE({
+                            title: "Intelligence divine",
+                            desc: "Se croire tout-puissant est dangereux.\n- Métro D, direction Vénissieux"
+                        })
+                    ]
+                });
+            }
+            if (message.author.id !== message.guild.ownerId && member.roles.highest.position >= message.member.roles.highest.position || member.id === message.author.id) {
+                return message.reply({
+                    embeds: [
+                        Module_Embed.newE({
+                            success: false,
+                            title: "Erreur",
+                            desc: "Vous n'avez pas la permission de bannir cet utilisateur."
+                        })
+                    ]
+                });
+            }
+            if (!member.bannable) {
+                return message.reply({
+                    embeds: [
+                        Module_Embed.newE({
+                            success: false,
+                            title: "Erreur",
+                            desc: "Impossible de bannir cet utilisateur."
+                        })
+                    ]
+                });
+            }
+
+            const reason = args.slice(1).join(' ') || 'Aucune raison fournie.';
+
+            try {
+                await member.ban({ reason: `${reason} (par ${message.author.tag})` });
+                message.reply({
+                    embeds: [
+                        Module_Embed.newE({
+                            success: true,
+                            title: "Succès de l'opération",
+                            desc: `**${member.user.tag}** a été banni avec succès. Raison : ${reason}`
+                        })
+                    ]
+                });
+            } catch (err) {
+                console.error('\x1b[31mERR\x1b[0m', "Erreur survenue lors du bannissement :", err);
+                message.reply({
+                    embeds: [
+                        Module_Embed.newE({
+                            success: false,
+                            title: "Erreur",
+                            desc: "Une erreur est survenue lors du bannissement."
+                        })
+                    ]
+                });
+            }
+        }
+
+
+        if (command === 'unban') {
+            if (Qadmin({ message, Module_Embed })) return;
+
+            const userId = args[0];
+            if (!userId || !/^\d{17,20}$/.test(userId)) {
+                return message.reply({
+                    embeds: [
+                        Module_Embed.newE({
+                            success: false,
+                            title: "Erreur",
+                            desc: "Veuillez joindre l'ID unique d'un utilisateur."
+                        })
+                    ]
+                });
+            }
+
+            const reason = args.slice(1).join(' ') || 'Aucune raison fournie.';
+
+            try {
+                const ban = await message.guild.bans.fetch(userId).catch(() => null);
+                if (!ban) {
+                    return message.reply({
+                        embeds: [
+                            Module_Embed.newE({
+                                success: false,
+                                title: "Erreur",
+                                desc: "Cet utilisateur n'est pas banni. Veuillez identifier un utilisateur déjà banni."
+                            })
+                        ]
+                    });
+                }
+                await message.guild.members.unban(userId, `${reason} (par ${message.author.tag})`);
+                message.reply({
+                    embeds: [
+                        Module_Embed.newE({
+                            success: true,
+                            title: "Succès de l'opération",
+                            desc: `**${ban.user.tag}** a été débanni avec succès. Raison : ${reason}`
+                        })
+                    ]
+                });
+            } catch (err) {
+                console.error('\x1b[31mERR\x1b[0m', "Erreur survenue lors du débannissement :", err);
+                message.reply({
+                    embeds: [
+                        Module_Embed.newE({
+                            success: false,
+                            title: "Erreur",
+                            desc: "Une erreur est survenue lors du débannissement."
+                        })
+                    ]
+                });
+            }
+        }
+
 
         if (command === "set-boost") {
 
