@@ -81,7 +81,8 @@ function getConfigPaths(FunctionsPack) {
     const modelPath = path.join(__dirname, '..', 'model');
     return {
         enabler: path.join(modelPath, 'servers_enabler.json'),
-        antilink: path.join(modelPath, 'servers_antilink.json')
+        antilink: path.join(modelPath, 'servers_antilink.json'),
+        antispam: path.join(modelPath, 'servers_antispam.json')
     };
 }
 
@@ -95,6 +96,7 @@ function saveServerConfigs(FunctionsPack, guild, serverConfig, expected = {}) {
     const paths = getConfigPaths(FunctionsPack);
     const enablerData = readJson(fs, paths.enabler);
     const antilinkData = readJson(fs, paths.antilink);
+    const antispamData = readJson(fs, paths.antispam);
     const serverIndex = enablerData.servers.findIndex(item => String(item['server-id']) === guild.id);
 
     if (serverIndex === -1) {
@@ -105,17 +107,21 @@ function saveServerConfigs(FunctionsPack, guild, serverConfig, expected = {}) {
 
     writeJson(fs, paths.enabler, enablerData);
     writeJson(fs, paths.antilink, antilinkData);
+    writeJson(fs, paths.antispam, antispamData);
 
     const savedEnablerData = readJson(fs, paths.enabler);
     const savedAntilinkData = readJson(fs, paths.antilink);
+    const savedAntispamData = readJson(fs, paths.antispam);
     const enablerServer = savedEnablerData.servers.find(item => String(item['server-id']) === guild.id);
     const antilinkServer = savedAntilinkData.servers.find(item => String(item['server-id']) === guild.id);
+    const antispamServer = savedAntispamData.servers.find(item => String(item['server-id']) === guild.id);
 
     const checks = Array.isArray(expected) ? expected : [expected];
     return checks.every(check => {
         if (check.setting) return enablerServer?.settings?.[check.setting.key] === check.setting.value;
         if (check.enabler) return enablerServer?.enabler?.find(item => item.name === check.enabler.name)?.stat === check.enabler.stat;
         if (check.antilink) return antilinkServer?.[check.antilink.key]?.includes(check.antilink.value) === check.antilink.includes;
+        if (check.antispam) return antispamServer?.[check.antispam.key]?.includes(check.antispam.value) === check.antispam.includes;
         return false;
     });
 }
@@ -132,6 +138,11 @@ function getServerEnabler(FunctionsPack, guild) {
     } else {
         server.settings ??= {};
         server.enabler ??= structuredClone(FunctionsPack[2]);
+        for (const defaultEnabler of FunctionsPack[2]) {
+            if (!server.enabler.some(item => item.name === defaultEnabler.name)) {
+                server.enabler.push(structuredClone(defaultEnabler));
+            }
+        }
         writeJson(fs, filePath, data);
     }
     return server;
@@ -150,4 +161,17 @@ function getServerAntilink(FunctionsPack, guild) {
     return server;
 }
 
-module.exports = { AllFunctionsController, Qadmin, containsForbiddenLink, Fantilink, getServerEnabler, getServerAntilink, saveServerConfigs, erreurJSON }
+function getServerAntispam(FunctionsPack, guild) {
+    const [fs] = FunctionsPack;
+    const filePath = getConfigPaths(FunctionsPack).antispam;
+    const data = readJson(fs, filePath);
+    let server = data.servers.find(item => String(item['server-id']) === guild.id);
+    if (!server) {
+        server = { 'server-id': guild.id, ...structuredClone(FunctionsPack[4]) };
+        data.servers.push(server);
+        writeJson(fs, filePath, data);
+    }
+    return server;
+}
+
+module.exports = { AllFunctionsController, Qadmin, containsForbiddenLink, Fantilink, getServerEnabler, getServerAntilink, getServerAntispam, saveServerConfigs, erreurJSON }

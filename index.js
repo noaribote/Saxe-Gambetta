@@ -1,5 +1,5 @@
 const { Client, GatewayIntentBits, EmbedBuilder, ActivityType, Events, Partials } = require("discord.js");
-const { AllFunctionsController, getServerEnabler, getServerAntilink, saveServerConfigs } = require("./controller/functions.js");
+const { AllFunctionsController, getServerEnabler, getServerAntilink, getServerAntispam, saveServerConfigs } = require("./controller/functions.js");
 const { token, prefix } = require('./config/essential.json');
 const { CreateEmbed } = require("./controller/services/EmbedBuilder.js");
 const { slashAntilink } = require("./controller/services/SlashCommandBuilder.js");
@@ -8,6 +8,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const enablerDefaults = [
     { name: 'antilink', stat: false },
+    { name: 'antispam', stat: false },
     { name: 'boost', stat: false },
     { name: 'welcome', stat: false },
     { name: 'autorole', stat: false }
@@ -16,8 +17,9 @@ const antilinkDefaults = {
     blacklisted: ['.gg/', 'youtu.be/'],
     allowedHosts: ['tenor.com', 'media.tenor.com', 'www.tenor.com']
 };
+const antispamDefaults = { msg: 3, ms: 1000 };
 
-const FunctionsPack = [fs, path, enablerDefaults, antilinkDefaults];
+const FunctionsPack = [fs, path, enablerDefaults, antilinkDefaults, antispamDefaults];
 
 const client = new Client({
     intents: [
@@ -51,6 +53,7 @@ client.once(Events.ClientReady, async (readyClient) => {
     for (const guild of readyClient.guilds.cache.values()) {
         getServerEnabler(FunctionsPack, guild);
         getServerAntilink(FunctionsPack, guild);
+        getServerAntispam(FunctionsPack, guild);
         await enregistrer(guild);
     }
     saveServerConfigs(FunctionsPack);
@@ -61,6 +64,7 @@ client.once(Events.ClientReady, async (readyClient) => {
 client.on(Events.GuildCreate, async (guild) => {
     getServerEnabler(FunctionsPack, guild);
     getServerAntilink(FunctionsPack, guild);
+    getServerAntispam(FunctionsPack, guild);
     saveServerConfigs(FunctionsPack);
     await enregistrer(guild);
 });
