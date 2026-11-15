@@ -32,7 +32,7 @@ module.exports = (client, prefix, Module_Embed, getServerEnabler, getServerAntil
                             { name: '``?set-autorole (on/off) (ID role)``', value: '> Permet de définir un rôle par défaut pour les nouveaux membres.', inline: false },
                             { name: '``?set-antilink (on/off)``', value: '> Permet de filtrer les liens parmis ceux autorisés sur le serveur.', inline: false },
                             // { name: '``/antilink``', value: '> Permet de paramétrer l\'antilink du serveur.', inline: false },
-                            // { name: '``?set-antispam``', value: '> Permet d\'établir un anti-spam.', inline: false },
+                            { name: '``?set-antispam (on/off)``', value: '> Permet d\'établir un anti-spam.', inline: false },
                             // { name: '``/antispam``', value: '> Permet d\'établir un anti-spam personnalisé.', inline: false },
                             { name: '\u200B', value: '\u200B' },
                             { name: 'Code source du bot Saxe Gambetta :', value: 'https://github.com/noaribote/Saxe-Gambetta', inline: false }
@@ -41,6 +41,46 @@ module.exports = (client, prefix, Module_Embed, getServerEnabler, getServerAntil
                 ]
             });
         };
+
+        if (message.content.startsWith(prefix + 'set-antispam')) {
+            const args = message.content.slice(prefix.length + "set-antispam".length).trim().split(/ +/);
+            if (Qadmin({ message, Module_Embed })) return;
+            if (args[0] === "on") {
+                Enabler.find(item => item.name === "antispam").stat = true;
+                if (!saveServerConfigs(FunctionsPack, message.guild, serverConfig, { enabler: { name: 'antispam', stat: true } })) return erreurJSON(message, Module_Embed);
+                message.reply({
+                    embeds: [
+                        Module_Embed.newE({
+                            success: true,
+                            title: "Succès de l'opération",
+                            desc: 'L\'antispam est désormais activé. Utilisez `/antispam` pour régler ses paramètres.'
+                        })
+                    ]
+                });
+            } else if (args[0] === "off") {
+                Enabler.find(item => item.name === "antispam").stat = false;
+                if (!saveServerConfigs(FunctionsPack, message.guild, serverConfig, { enabler: { name: 'antispam', stat: false } })) return erreurJSON(message, Module_Embed);
+                message.reply({
+                    embeds: [
+                        Module_Embed.newE({
+                            success: true,
+                            title: "Succès de l'opération",
+                            desc: `L'antispam est désormais désactivé.`
+                        })
+                    ]
+                });
+            } else {
+                message.reply({
+                    embeds: [
+                        Module_Embed.newE({
+                            success: false,
+                            title: "Erreur",
+                            desc: "Veuillez utiliser les arguments `on` ou `off` afin d'activer ou de désactiver l'antispam."
+                        })
+                    ]
+                });
+            }
+        }
 
         if (message.content.startsWith(prefix + 'set-antilink')) {
             const args = message.content.slice(prefix.length + "set-antilink".length).trim().split(/ +/);

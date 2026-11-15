@@ -43,7 +43,7 @@ Version stable mais incomplète avec des problèmes potentiels.
 ``/antilink``
 > Permet de paramétrer l'anti-link du serveur.
 
-``?set-antispam``
+``?set-antispam (on/off)``
 > Permet d'établir un anti-spam.
 
 ``/antispam``
