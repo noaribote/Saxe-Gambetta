@@ -17,7 +17,7 @@ const antilinkDefaults = {
     blacklisted: ['.gg/', 'youtu.be/'],
     allowedHosts: ['tenor.com', 'media.tenor.com', 'www.tenor.com']
 };
-const antispamDefaults = { msg: 3, ms: 1000 };
+const antispamDefaults = { msg: 5, ms: 3000 };
 
 const FunctionsPack = [fs, path, enablerDefaults, antilinkDefaults, antispamDefaults];
 
@@ -42,7 +42,7 @@ const activities = [
 const Module_1 = AllFunctionsController({client, activities});
 const Module_Embed = CreateEmbed({EmbedBuilder});
 require('./controller/interactions.js')(client, Events);
-require('./controller/commands.js')(client, prefix, Module_Embed, getServerEnabler, getServerAntilink, saveServerConfigs, FunctionsPack);
+require('./controller/commands.js')(client, prefix, Module_Embed, getServerEnabler, getServerAntilink, getServerAntispam, saveServerConfigs, FunctionsPack);
 require('./controller/commandsUpdate.js')(client, Module_Embed, getServerEnabler, getServerAntilink, FunctionsPack);
 require('./controller/services/guildMemberAdd.js')(client, Module_Embed, getServerEnabler, FunctionsPack);
 require('./controller/services/guildMemberUpdate.js')(client, Events, Module_Embed, getServerEnabler, FunctionsPack);

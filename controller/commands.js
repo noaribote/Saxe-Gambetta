@@ -1,5 +1,6 @@
-module.exports = (client, prefix, Module_Embed, getServerEnabler, getServerAntilink, saveServerConfigs, FunctionsPack) => {
-    const { Qadmin, Fantilink, erreurJSON } = require("./functions.js");    
+module.exports = (client, prefix, Module_Embed, getServerEnabler, getServerAntilink, getServerAntispam, saveServerConfigs, FunctionsPack) => {
+    const { Qadmin, Fantilink, Fantispam, erreurJSON } = require("./functions.js");    
+    const userMessages = new Map();
     client.on('messageCreate', (message) => {
         if (message.author.bot || !message.guild) return;
 
@@ -171,10 +172,14 @@ module.exports = (client, prefix, Module_Embed, getServerEnabler, getServerAntil
     });
     client.on("messageCreate", async (message) => {
         if (message.author.bot || !message.guild) return;
-        if (!message.content.startsWith(prefix)) return;
 
         const serverConfig = getServerEnabler(FunctionsPack, message.guild);
         const Enabler = serverConfig.enabler;
+        const antispam = getServerAntispam(FunctionsPack, message.guild);
+
+        Fantispam(userMessages, Module_Embed, Enabler, antispam, message);
+
+        if (!message.content.startsWith(prefix)) return;
 
         if (message.content.startsWith(prefix + 'info')) {
             const args = message.content.slice(prefix.length + "info".length).trim().split(/ +/);

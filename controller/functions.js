@@ -66,6 +66,48 @@ function Fantilink(Module_Embed, Enabler, antilink, etatMessage) {
     }
 }
 
+async function Fantispam(userMessages, Module_Embed, Enabler, antispam, etatMessage) {
+    if (Enabler.find(item => item.name === "antispam")?.stat !== true) return;
+
+    const maxMessages = Number(antispam?.msg);
+    const windowMs = Number(antispam?.ms);
+    if (!Number.isFinite(maxMessages) || maxMessages < 1 || !Number.isFinite(windowMs) || windowMs < 1) {
+        console.error('\x1b[31mERR\x1b[0m', "Erreur : configuration antispam invalide pour le serveur", etatMessage.guild.id);
+        return;
+    }
+
+    const now = etatMessage.createdTimestamp;
+    const userMessagesArray = (userMessages.get(etatMessage.author.id) || [])
+        .filter(timestamp => now - timestamp >= 0 && now - timestamp <= windowMs);
+    userMessagesArray.push(now);
+    userMessages.set(etatMessage.author.id, userMessagesArray);
+
+    if (userMessagesArray.length < maxMessages) return;
+
+    userMessages.delete(etatMessage.author.id);
+    const member = await etatMessage.guild.members.fetch(etatMessage.author.id).catch(() => null);
+    if (!member) return;
+
+    try {
+        await member.ban({ reason: `Antispam : ${maxMessages} messages en ${windowMs} ms` });
+        await etatMessage.channel.send({ embeds: [
+            Module_Embed.newE({
+                title: 'Service de sécurité',
+                desc: `L'utilisateur ${etatMessage.author} a violé la loi anti-spam du serveur.`
+            })
+        ] });
+    } catch (error) {
+        console.error('\x1b[31mERR\x1b[0m', "Erreur lors du bannissement antispam :", error);
+        etatMessage.channel.send({ embeds: [
+            Module_Embed.newE({
+                success: false,
+                title: 'Erreur',
+                desc: `Erreur lors du bannissement de ${etatMessage.author} pour violation de la loi anti-spam du serveur.`
+            })
+        ] });
+    }
+}
+
 function erreurJSON(message, Module_Embed) {
     return message.reply({ embeds: [
         Module_Embed.newE({
@@ -174,4 +216,4 @@ function getServerAntispam(FunctionsPack, guild) {
     return server;
 }
 
-module.exports = { AllFunctionsController, Qadmin, containsForbiddenLink, Fantilink, getServerEnabler, getServerAntilink, getServerAntispam, saveServerConfigs, erreurJSON }
+module.exports = { AllFunctionsController, Qadmin, containsForbiddenLink, Fantilink, Fantispam, getServerEnabler, getServerAntilink, getServerAntispam, saveServerConfigs, erreurJSON }
