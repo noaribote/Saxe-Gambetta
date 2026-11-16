@@ -219,4 +219,16 @@ function getServerAntispam(FunctionsPack, guild) {
     return server;
 }
 
-module.exports = { AllFunctionsController, Qadmin, QIadmin, containsForbiddenLink, Fantilink, Fantispam, getServerEnabler, getServerAntilink, getServerAntispam, saveServerConfigs, erreurJSON }
+async function slashCreateCommand(Module_Embed, message, pack) {
+    try {
+        await pack[0].send({
+            embeds: [ Module_Embed.newE({ title: pack[1], desc: pack[2] }) ]
+        });
+        return true;
+    } catch (error) {
+        console.log('\x1b[31mERR\x1b[0m', "Erreur lors de l'envoi du message personnalisé :", error);
+        return false;
+    }
+}
+
+module.exports = { AllFunctionsController, Qadmin, QIadmin, slashCreateCommand, containsForbiddenLink, Fantilink, Fantispam, getServerEnabler, getServerAntilink, getServerAntispam, saveServerConfigs, erreurJSON }
