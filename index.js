@@ -2,7 +2,7 @@ const { Client, GatewayIntentBits, EmbedBuilder, ActivityType, Events, Partials 
 const { AllFunctionsController, getServerEnabler, getServerAntilink, getServerAntispam, saveServerConfigs } = require("./controller/functions.js");
 const { token, prefix } = require('./config/essential.json');
 const { CreateEmbed } = require("./controller/services/EmbedBuilder.js");
-const { slashAntilink } = require("./controller/services/SlashCommandBuilder.js");
+const { slashCreate, slashAntilink, slashAntispam } = require("./controller/services/SlashCommandBuilder.js");
 
 const fs = require('node:fs');
 const path = require('node:path');
@@ -41,13 +41,13 @@ const activities = [
 
 const Module_1 = AllFunctionsController({client, activities});
 const Module_Embed = CreateEmbed({EmbedBuilder});
-require('./controller/interactions.js')(client, Events);
+require('./controller/interactions.js')(client, Module_Embed, Events);
 require('./controller/commands.js')(client, prefix, Module_Embed, getServerEnabler, getServerAntilink, getServerAntispam, saveServerConfigs, FunctionsPack);
 require('./controller/commandsUpdate.js')(client, Module_Embed, getServerEnabler, getServerAntilink, FunctionsPack);
 require('./controller/services/guildMemberAdd.js')(client, Module_Embed, getServerEnabler, FunctionsPack);
 require('./controller/services/guildMemberUpdate.js')(client, Events, Module_Embed, getServerEnabler, FunctionsPack);
 
-const enregistrer = (guild) => guild.commands.set([slashAntilink]);
+const enregistrer = (guild) => guild.commands.set([slashCreate, slashAntilink, slashAntispam]);
 
 client.once(Events.ClientReady, async (readyClient) => {
     for (const guild of readyClient.guilds.cache.values()) {

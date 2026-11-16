@@ -24,7 +24,7 @@ module.exports = (client, prefix, Module_Embed, getServerEnabler, getServerAntil
                             { name: '``?help``', value: '> Permet de visualiser toutes les commandes et informations concernant le bot Saxe Gambetta.', inline: false },
                             { name: '``?info (@ utilisateur)``', value: '> Permet de visualiser toutes les informations concernant un utilisateur.', inline: false },
                             { name: '\u200B', value: '**Pour les administrateurs :**' },
-                            // { name: '``/create``', value: '> Permet de créer un message embarqué personnalisé.', inline: false },
+                            { name: '``/create``', value: '> Permet de créer un message embarqué personnalisé.', inline: false },
                             { name: '``?clear (0-100)``', value: '> Permet la suppression d\'un nombre défini de messages.', inline: false },
                             { name: '``?ban (@ utilisateur)``', value: '> Permet le banissement définitif d\'un utilisateur du serveur.', inline: false },
                             { name: '``?unban (ID utilisateur)``', value: '> Permet le débanissement d\'un utilisateur du serveur.', inline: false },
@@ -32,9 +32,9 @@ module.exports = (client, prefix, Module_Embed, getServerEnabler, getServerAntil
                             { name: '``?set-welcome (on/off) (ID salon)``', value: '> Permet de définir les messages de bienvenue pour les nouveaux membres.', inline: false },
                             { name: '``?set-autorole (on/off) (ID role)``', value: '> Permet de définir un rôle par défaut pour les nouveaux membres.', inline: false },
                             { name: '``?set-antilink (on/off)``', value: '> Permet de filtrer les liens parmis ceux autorisés sur le serveur.', inline: false },
-                            // { name: '``/antilink``', value: '> Permet de paramétrer l\'antilink du serveur.', inline: false },
+                            { name: '``/antilink``', value: '> Permet de paramétrer l\'antilink du serveur.', inline: false },
                             { name: '``?set-antispam (on/off)``', value: '> Permet d\'établir un anti-spam.', inline: false },
-                            // { name: '``/antispam``', value: '> Permet d\'établir un anti-spam personnalisé.', inline: false },
+                            { name: '``/antispam``', value: '> Permet d\'établir un anti-spam personnalisé.', inline: false },
                             { name: '\u200B', value: '\u200B' },
                             { name: 'Code source du bot Saxe Gambetta :', value: 'https://github.com/noaribote/Saxe-Gambetta', inline: false }
                         ]

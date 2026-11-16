@@ -15,10 +15,10 @@ function AllFunctionsController({client, activities}) {
     return { changeActivity };
 }
 
-function Qadmin({ message, Module_Embed }) {
-    if (!message.member || !(BigInt(message.member.permissions) & BigInt(0x00000008))) {
+function embedAdmin(etat, Module_Embed) {
+    if (!etat.member || !(BigInt(etat.member.permissions) & BigInt(0x00000008))) {
         setTimeout(() => {
-            message.reply({ embeds: [
+            etat.reply({ embeds: [
                 Module_Embed.newE({
                     success: false,
                     title: "Erreur",
@@ -30,6 +30,9 @@ function Qadmin({ message, Module_Embed }) {
     };
     return false;
 }
+
+function Qadmin({ message, Module_Embed }) { return embedAdmin(message, Module_Embed) }
+function QIadmin({ interaction, Module_Embed }) { return embedAdmin(interaction, Module_Embed) }
 
 
 function containsForbiddenLink(content, antilink) {
@@ -216,4 +219,4 @@ function getServerAntispam(FunctionsPack, guild) {
     return server;
 }
 
-module.exports = { AllFunctionsController, Qadmin, containsForbiddenLink, Fantilink, Fantispam, getServerEnabler, getServerAntilink, getServerAntispam, saveServerConfigs, erreurJSON }
+module.exports = { AllFunctionsController, Qadmin, QIadmin, containsForbiddenLink, Fantilink, Fantispam, getServerEnabler, getServerAntilink, getServerAntispam, saveServerConfigs, erreurJSON }
