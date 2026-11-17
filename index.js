@@ -15,7 +15,7 @@ const enablerDefaults = [
 ];
 const antilinkDefaults = {
     blacklisted: ['.gg/', 'youtu.be/'],
-    allowedHosts: ['tenor.com', 'media.tenor.com', 'www.tenor.com']
+    allowedHosts: ['tenor.com', 'media.tenor.com', 'www.tenor.com', 'klipy.com']
 };
 const antispamDefaults = { msg: 5, ms: 3000 };
 

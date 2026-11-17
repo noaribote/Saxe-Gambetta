@@ -36,14 +36,24 @@ function QIadmin({ interaction, Module_Embed }) { return embedAdmin(interaction,
 
 
 function containsForbiddenLink(content, antilink) {
-    const text = content.toLowerCase();
-    const allowed = antilink.allowedHosts || [];
-    const blacklisted = antilink.blacklisted || [];
+    const text = String(content || '').toLowerCase();
+    const allowed = (antilink?.allowedHosts || []).map(item => String(item).toLowerCase());
+    const blacklisted = (antilink?.blacklisted || []).map(item => String(item).toLowerCase());
+    const urls = text.match(/(?:https?:\/\/|www\.)[^\s<>]+/gi) || [];
 
-    if (allowed.some(item => text.includes(String(item).toLowerCase()))) return false;
-    return blacklisted.some(item => text.includes(String(item).toLowerCase()));
+    return urls.some(rawUrl => {
+        const url = rawUrl.replace(/[),.!?;:]+$/g, '');
+        let hostname;
+        try {
+            hostname = new URL(url.startsWith('www.') ? `https://${url}` : url).hostname.toLowerCase();
+        } catch {
+            return false;
+        }
+        if (allowed.some(host => hostname === host || hostname.endsWith(`.${host}`))) return false;
+        if (blacklisted.some(rule => url.includes(rule) || hostname === rule || hostname.endsWith(`.${rule}`))) return true;
+        return true;
+    });
 }
-
 function setServerAntilink(FunctionsPack, guild, domaine, autorisation) {
     const [fs] = FunctionsPack;
     const filePath = getConfigPaths(FunctionsPack).antilink;
@@ -68,19 +78,21 @@ function setServerAntilink(FunctionsPack, guild, domaine, autorisation) {
 }
 
 function Fantilink(Module_Embed, Enabler, antilink, etatMessage) {
-    if (Enabler.find(item => item.name === "antilink").stat === true) {
+    if (Enabler.find(item => item.name === "antilink")?.stat === true) {
         if (containsForbiddenLink(etatMessage.content, antilink)) {
-            if (!etatMessage.member || !(BigInt(etatMessage.member.permissions) & BigInt(0x00000008))) {
+            const memberPermissions = etatMessage.member?.permissions;
+            const isAdministrator = memberPermissions && (BigInt(memberPermissions.bitfield ?? memberPermissions) & BigInt(0x00000008)) !== 0n;
+            if (!isAdministrator) {
                 etatMessage.channel.send({ embeds: [
                     Module_Embed.newE({
                         title: "Service de sécurité",
-                        desc: `L'antilink a intercepté un message envoyé par <@${etatMessage.member.id}>.`
+                        desc: `L'antilink a intercepté un message envoyé par <@${etatMessage.author.id}>.`
                     })
                 ] }).then(msg => {
                     setTimeout(() => msg.delete().catch(error => console.error('\x1b[31mERR\x1b[0m', "Erreur de la suppression automatique de l'embed antilink :", error)), 10000);
                 }).catch(error => console.error('\x1b[31mERR\x1b[0m', "Erreur lors de l'envoi de l'embed :", error));
 
-                console.log('\x1b[34mINFO\x1b[0m', `Message avec liens prohibés de ${etatMessage.member.user.tag} : ${etatMessage.content}`);
+                console.log('\x1b[34mINFO\x1b[0m', `Message avec liens prohibés de ${etatMessage.author.tag} : ${etatMessage.content}`);
                 etatMessage.delete().catch((error) => console.error('\x1b[31mERR\x1b[0m', "Erreur lors de la suppression par l'antilink :", error));
             }
         }
