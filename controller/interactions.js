@@ -1,5 +1,5 @@
 module.exports = (client, Module_Embed, Events, FunctionsPack) => {
-    const { QIadmin, slashCreateCommand, setServerAntispam } = require("./functions.js");
+    const { QIadmin, slashCreateCommand, setServerAntilink, setServerAntispam } = require("./functions.js");
 
     client.on(Events.InteractionCreate, async (interaction) => {
         if (!interaction.guild) return;
@@ -37,10 +37,31 @@ module.exports = (client, Module_Embed, Events, FunctionsPack) => {
         }
 
         if (interaction.commandName === 'antilink') {
-            const domaine = interaction.options.getString('domaine', true);
-            const bool = interaction.options.getBoolean('autorisation', true);
-        
-            await interaction.reply(`test antilink ${domaine}, ${bool}`);
+            const domaine = interaction.options.getString('domaine', true).trim();
+            const autorisation = interaction.options.getBoolean('autorisation', true);
+            try {
+                if (!domaine || !setServerAntilink(FunctionsPack, interaction.guild, domaine, autorisation)) {
+                    throw new Error('La vérification après sauvegarde a échoué.');
+                }
+            } catch (error) {
+                console.error('\x1b[31mERR\x1b[0m', "Erreur lors de l'enregistrement de la configuration antilink :", error);
+                await interaction.reply({ embeds: [
+                    Module_Embed.newE({
+                        success: false,
+                        title: "Erreur",
+                        desc: `Impossible d'enregistrer le domaine ${domaine} dans la configuration anti-link du serveur.`
+                    })
+                ] });
+                return;
+            }
+
+            await interaction.reply({ embeds: [
+                Module_Embed.newE({
+                    success: true,
+                    title: "Succès de l'opération",
+                    desc: `Le domaine \`${domaine}\` est désormais ${autorisation ? 'autorisé' : 'blacklisté'} sur ce serveur.`
+                })
+            ] });
         }
 
         if (interaction.commandName === 'antispam') {

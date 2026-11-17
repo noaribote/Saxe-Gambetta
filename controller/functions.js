@@ -37,16 +37,34 @@ function QIadmin({ interaction, Module_Embed }) { return embedAdmin(interaction,
 
 function containsForbiddenLink(content, antilink) {
     const text = content.toLowerCase();
-    const urls = text.match(/https?:\/\/[^\s|)>\]]+/g) || [];
-    for (const raw of urls) {
-        try {
-            const host = new URL(raw).hostname;
-            if (!antilink.allowedHosts.includes(host)) return true;
-        } catch {
-            return true;
-        }
+    const allowed = antilink.allowedHosts || [];
+    const blacklisted = antilink.blacklisted || [];
+
+    if (allowed.some(item => text.includes(String(item).toLowerCase()))) return false;
+    return blacklisted.some(item => text.includes(String(item).toLowerCase()));
+}
+
+function setServerAntilink(FunctionsPack, guild, domaine, autorisation) {
+    const [fs] = FunctionsPack;
+    const filePath = getConfigPaths(FunctionsPack).antilink;
+    const data = readJson(fs, filePath);
+    let server = data.servers.find(item => String(item['server-id']) === guild.id);
+
+    if (!server) {
+        server = { 'server-id': guild.id, ...structuredClone(FunctionsPack[3]) };
+        data.servers.push(server);
     }
-    return antilink.blacklisted.some(item => text.includes(item));
+    server.blacklisted ??= []; server.allowedHosts ??= [];
+    
+    const value = domaine.trim().toLowerCase();
+
+    server.blacklisted = server.blacklisted.filter(item => String(item).toLowerCase() !== value);
+    server.allowedHosts = server.allowedHosts.filter(item => String(item).toLowerCase() !== value);
+
+    (autorisation ? server.allowedHosts : server.blacklisted).push(value);
+    writeJson(fs, filePath, data);
+
+    return server.blacklisted.includes(value) === !autorisation && server.allowedHosts.includes(value) === autorisation;
 }
 
 function Fantilink(Module_Embed, Enabler, antilink, etatMessage) {
@@ -246,4 +264,4 @@ async function slashCreateCommand(Module_Embed, pack) {
     }
 }
 
-module.exports = { AllFunctionsController, Qadmin, QIadmin, slashCreateCommand, containsForbiddenLink, Fantilink, Fantispam, getServerEnabler, getServerAntilink, getServerAntispam, setServerAntispam, saveServerConfigs, erreurJSON }
+module.exports = { AllFunctionsController, Qadmin, QIadmin, slashCreateCommand, containsForbiddenLink, Fantilink, Fantispam, getServerEnabler, getServerAntilink, getServerAntispam, setServerAntilink, setServerAntispam, saveServerConfigs, erreurJSON }
