@@ -41,7 +41,7 @@ const activities = [
 
 const Module_1 = AllFunctionsController({client, activities});
 const Module_Embed = CreateEmbed({EmbedBuilder});
-require('./controller/interactions.js')(client, Module_Embed, Events);
+require('./controller/interactions.js')(client, Module_Embed, Events, FunctionsPack);
 require('./controller/commands.js')(client, prefix, Module_Embed, getServerEnabler, getServerAntilink, getServerAntispam, saveServerConfigs, FunctionsPack);
 require('./controller/commandsUpdate.js')(client, Module_Embed, getServerEnabler, getServerAntilink, FunctionsPack);
 require('./controller/services/guildMemberAdd.js')(client, Module_Embed, getServerEnabler, FunctionsPack);

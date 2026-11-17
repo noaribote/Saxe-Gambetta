@@ -1,7 +1,8 @@
-module.exports = (client, Module_Embed, Events) => {
-    const { QIadmin, slashCreateCommand } = require("./functions.js");    
+module.exports = (client, Module_Embed, Events, FunctionsPack) => {
+    const { QIadmin, slashCreateCommand, setServerAntispam } = require("./functions.js");
 
     client.on(Events.InteractionCreate, async (interaction) => {
+        if (!interaction.guild) return;
         if (!interaction.isChatInputCommand()) return;
         if (QIadmin({ interaction, Module_Embed })) return;
 
@@ -12,7 +13,7 @@ module.exports = (client, Module_Embed, Events) => {
                 content = interaction.options.getString('contenu', true)
             ];
 
-            if (await slashCreateCommand(Module_Embed, interaction, pack)) {
+            if (await slashCreateCommand(Module_Embed, pack)) {
                 await interaction.reply({
                     embeds: [
                         Module_Embed.newE({
@@ -45,8 +46,33 @@ module.exports = (client, Module_Embed, Events) => {
         if (interaction.commandName === 'antispam') {
             const msg = interaction.options.getInteger('nombre_message', true);
             const ms = interaction.options.getInteger('intervalle', true);
-            
-            await interaction.reply(`test antispam ${msg}, ${ms}`);
+            try {
+                if (!setServerAntispam(FunctionsPack, interaction.guild, { msg, ms })) {
+                    throw new Error('La vérification après sauvegarde a échoué.');
+                }
+            } catch (error) {
+                console.error('\x1b[31mERR\x1b[0m', "Erreur lors de l'enregistrement de la configuration antispam :", error);
+                await interaction.reply({
+                    embeds: [
+                        Module_Embed.newE({
+                            success: false,
+                            title: "Erreur",
+                            desc: `Impossible d'enregistrer la nouvelle configuration anti-spam du serveur.`
+                        })
+                    ]
+                });
+                return;
+            }
+
+            await interaction.reply({
+                embeds: [
+                    Module_Embed.newE({
+                        success: true,
+                        title: "Succès de l'opération",
+                        desc: `Nouvelle configuration anti-spam mise à jour avec succès (${msg} messages en ${ms} ms).`
+                    })
+                ]
+            });
         }
 
     });

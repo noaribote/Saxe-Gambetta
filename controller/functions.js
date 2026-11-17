@@ -219,7 +219,22 @@ function getServerAntispam(FunctionsPack, guild) {
     return server;
 }
 
-async function slashCreateCommand(Module_Embed, message, pack) {
+function setServerAntispam(FunctionsPack, guild, settings) {
+    const [fs] = FunctionsPack;
+    const filePath = getConfigPaths(FunctionsPack).antispam;
+    const data = readJson(fs, filePath);
+    let server = data.servers.find(item => String(item['server-id']) === guild.id);
+    if (!server) {
+        server = { 'server-id': guild.id, ...structuredClone(FunctionsPack[4]) };
+        data.servers.push(server);
+    }
+    server.msg = settings.msg;
+    server.ms = settings.ms;
+    writeJson(fs, filePath, data);
+    return server.msg === settings.msg && server.ms === settings.ms;
+}
+
+async function slashCreateCommand(Module_Embed, pack) {
     try {
         await pack[0].send({
             embeds: [ Module_Embed.newE({ title: pack[1], desc: pack[2] }) ]
@@ -231,4 +246,4 @@ async function slashCreateCommand(Module_Embed, message, pack) {
     }
 }
 
-module.exports = { AllFunctionsController, Qadmin, QIadmin, slashCreateCommand, containsForbiddenLink, Fantilink, Fantispam, getServerEnabler, getServerAntilink, getServerAntispam, saveServerConfigs, erreurJSON }
+module.exports = { AllFunctionsController, Qadmin, QIadmin, slashCreateCommand, containsForbiddenLink, Fantilink, Fantispam, getServerEnabler, getServerAntilink, getServerAntispam, setServerAntispam, saveServerConfigs, erreurJSON }
