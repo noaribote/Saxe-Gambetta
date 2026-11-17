@@ -10,8 +10,6 @@ module.exports = (client, prefix, Module_Embed, getServerEnabler, getServerAntil
 
         Fantilink(Module_Embed, Enabler, antilink, message);
 
-        if (!message.content.startsWith(prefix)) return;
-
         if (message.content === prefix + `help` || message.content === prefix + `info` || message.content === `<@${client.user.id}>`) {
             message.reply({
                 embeds: [
@@ -42,6 +40,8 @@ module.exports = (client, prefix, Module_Embed, getServerEnabler, getServerAntil
                 ]
             });
         };
+
+        if (!message.content.startsWith(prefix)) return;
 
         if (message.content.startsWith(prefix + 'set-antispam')) {
             const args = message.content.slice(prefix.length + "set-antispam".length).trim().split(/ +/);
