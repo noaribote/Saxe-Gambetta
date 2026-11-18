@@ -1,9 +1,3 @@
-# Bot en cours de développement !
-
-Version complète mais problèmes possibles.
-- Veuillez attendre la sortie d'une **version officiellement stable** avant d'utiliser la source. Date estimée : **18 novembre 2026**
-> Vous pouvez néanmoins utiliser cette source en y intégrant vos propres modifications.
-
 # Fonctionnalités disponibles
 
 ### Pour tous les utilisateurs :
