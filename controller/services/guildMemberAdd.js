@@ -24,7 +24,8 @@ module.exports = (client, Module_Embed, getServerEnabler, FunctionsPack) => {
 
         if (Enabler.find(item => item.name === "autorole")?.stat) {
             const role = member.guild.roles.cache.get(settings.autoroleRoleId);
-            if (role) {
+            const botMember = member.guild.members.me;
+            if (role && !role.managed && botMember?.permissions.has('ManageRoles') && role.position < botMember.roles.highest.position) {
                 member.roles.add(role)
                     .then(() =>
                             console.log('\x1b[34mINFO\x1b[0m', `Rôle automatiquement attribué à ${member.user.tag}.`

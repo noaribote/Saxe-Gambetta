@@ -49,11 +49,24 @@ function containsForbiddenLink(content, antilink) {
         } catch {
             return false;
         }
-        if (allowed.some(host => hostname === host || hostname.endsWith(`.${host}`))) return false;
         if (blacklisted.some(rule => url.includes(rule) || hostname === rule || hostname.endsWith(`.${rule}`))) return true;
+        if (allowed.some(host => hostname === host || hostname.endsWith(`.${host}`))) return false;
         return true;
     });
 }
+
+function normalizeDomain(value) {
+    if (typeof value !== 'string') return null;
+
+    const domain = value.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/$/, '');
+    if (!domain || domain.length > 253 || /[\s/@?#:]/.test(domain)) return null;
+
+    const hostname = domain.startsWith('*.') ? domain.slice(2) : domain;
+    if (hostname.split('.').some(label => !label || label.length > 63 || !/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/.test(label))) return null;
+
+    return domain;
+}
+
 function setServerAntilink(FunctionsPack, guild, domaine, autorisation) {
     const [fs] = FunctionsPack;
     const filePath = getConfigPaths(FunctionsPack).antilink;
@@ -66,7 +79,8 @@ function setServerAntilink(FunctionsPack, guild, domaine, autorisation) {
     }
     server.blacklisted ??= []; server.allowedHosts ??= [];
     
-    const value = domaine.trim().toLowerCase();
+    const value = normalizeDomain(domaine);
+    if (!value) return false;
 
     server.blacklisted = server.blacklisted.filter(item => String(item).toLowerCase() !== value);
     server.allowedHosts = server.allowedHosts.filter(item => String(item).toLowerCase() !== value);
@@ -104,7 +118,7 @@ async function Fantispam(userMessages, Module_Embed, Enabler, antispam, etatMess
 
     const maxMessages = Number(antispam?.msg);
     const windowMs = Number(antispam?.ms);
-    if (!Number.isFinite(maxMessages) || maxMessages < 1 || !Number.isFinite(windowMs) || windowMs < 1) {
+    if (!Number.isInteger(maxMessages) || maxMessages < 3 || maxMessages > 100 || !Number.isInteger(windowMs) || windowMs < 1000 || windowMs > 60000) {
         console.error('\x1b[31mERR\x1b[0m', "Erreur : configuration antispam invalide pour le serveur", etatMessage.guild.id);
         return;
     }
@@ -121,8 +135,10 @@ async function Fantispam(userMessages, Module_Embed, Enabler, antispam, etatMess
     const member = await etatMessage.guild.members.fetch(etatMessage.author.id).catch(() => null);
     if (!member) return;
 
+    if (!member.moderatable || member.id === etatMessage.guild.ownerId || member.user.bot) return;
+
     try {
-        await member.ban({ reason: `Antispam : ${maxMessages} messages en ${windowMs} ms` });
+        await member.timeout(5 * 60 * 1000, `Antispam : ${maxMessages} messages en ${windowMs} ms`);
         await etatMessage.channel.send({ embeds: [
             Module_Embed.newE({
                 title: 'Service de sécurité',
@@ -276,4 +292,4 @@ async function slashCreateCommand(Module_Embed, pack) {
     }
 }
 
-module.exports = { AllFunctionsController, Qadmin, QIadmin, slashCreateCommand, containsForbiddenLink, Fantilink, Fantispam, getServerEnabler, getServerAntilink, getServerAntispam, setServerAntilink, setServerAntispam, saveServerConfigs, erreurJSON }
+module.exports = { AllFunctionsController, Qadmin, QIadmin, slashCreateCommand, containsForbiddenLink, normalizeDomain, Fantilink, Fantispam, getServerEnabler, getServerAntilink, getServerAntispam, setServerAntilink, setServerAntispam, saveServerConfigs, erreurJSON }

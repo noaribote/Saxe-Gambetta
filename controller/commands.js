@@ -513,7 +513,9 @@ module.exports = (client, prefix, Module_Embed, getServerEnabler, getServerAntil
             if (args[0] === "on") {
                 if (args[1]) {
                     const roleID = args[1];
-                    if (message.guild.roles.cache.has(roleID)) {
+                    const role = message.guild.roles.cache.get(roleID);
+                    const botMember = message.guild.members.me;
+                    if (role && !role.managed && botMember?.permissions.has('ManageRoles') && role.position < botMember.roles.highest.position) {
                         serverConfig.settings.autoroleRoleId = roleID;
                         Enabler.find(item => item.name === "autorole").stat = true;
                         if (!saveServerConfigs(FunctionsPack, message.guild, serverConfig, [

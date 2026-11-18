@@ -21,8 +21,8 @@ const { SlashCommandBuilder } = require("discord.js");
         .setName('antispam')
         .setDescription('Permet de paramétrer l\'anti-spam du serveur.')
 
-        .addIntegerOption((o) => o.setName('nombre_message').setDescription('Le nombre de messages comptés par Saxe Gambetta avant le banissement de l\'utilisateur.').setRequired(true))
-        .addIntegerOption((o) => o.setName('intervalle').setDescription('L\'intervalle en millisecondes dans lequel le nombre de messages est compté.').setRequired(true))
+        .addIntegerOption((o) => o.setName('nombre_message').setDescription('Messages avant une mise en sourdine de 5 minutes (3 a 100).').setMinValue(3).setMaxValue(100).setRequired(true))
+        .addIntegerOption((o) => o.setName('intervalle').setDescription('Fenetre de detection en millisecondes (1000 a 60000).').setMinValue(1000).setMaxValue(60000).setRequired(true))
     ;
 
 module.exports = { slashCreate, slashAntilink, slashAntispam };
